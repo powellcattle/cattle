@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            $("#eartag").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: 'http://powell-home.com:5000/animal',
+                        type: 'GET',
+                        autoFocus: true,
+                        dataType: 'jsonp',
+                        data: {ear_tag: request.term},
+                        success: function (data) {
+                            if (!data)
+                                return;
+                            response($.map(data, function (animals) {
+                                var ear_tags = [];
+                                $.each(animals, function (idx, animal) {
+                                    ear_tags[idx] = animal.ear_tag;
+                                });
+                                return ear_tags;
+                            }));
+                        }
+                    });
+                },
+                minLength: 3
+            });
+            $('a#process_eartag').bind('click', function () {
+                $.getJSON('/_eartag_datails', {
+                    eartag: $('input[name="eartag"]').val(),
+                }, function (data) {
+                    $.map(data, function(animals) {
+                        var newList = '<table>';
+                          $.each(animals, function(idx, calf) {
+                            // newList +='<li>' + calf.ear_tag + '</li>';
+                            // newList +='<dd>' + calf.status + '</dd>';
+                            if( null != calf.birth_date) {
+                                newList += '<tr><th style="text-align:left">' + calf.ear_tag + '</th>';
+                                newList += '<th style="text-align:left">' + calf.birth_date + '</th>';
+                                newList += '<th style="text-align:left">' + calf.status + '</th></tr>';
+                            } else {
+                                newList += '<tr><th style="text-align:left">' + calf.ear_tag + '</th>';
+                                newList += '<th style="text-align:left">' + calf.status + '</th></tr>';
+                            }
+                        });
+                        newList += '</table>';
+                        $("#eartag_results").prepend(newList);
+                    });
+                });
+                return false;
+            });
+
+        });
+
+
+    </script>
+</head>
+<body class="body">
+<div>
+    <form>
+        <input id="eartag" type="text" autocomplete="off" name="eartag">
+        <a href="#" id='process_eartag'>
+            <button class="btn btn-default">Details</button>
+        </a>
+    </form>
+    <p id="eartag_results">
+
+    </p>
+
+</div>
+
+</body>
+</html>

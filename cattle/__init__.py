@@ -4,6 +4,7 @@ import inspect
 import logging
 
 import psql_util
+from animal_ref import ReferenceAnimal
 from nosql.animal import Animal
 from nosql.breed import Breed, BreedTemp
 from nosql.measurement import Measurement
@@ -180,7 +181,6 @@ def load_parents(_file_name: str) -> None:
             next(reader, None)
 
             for row in reader:
-                animal = Animal()
                 id = str_util.to_pos_int_or_none(row[0])  # A
 
                 animal = Animal.objects(id=id).first()
@@ -191,33 +191,39 @@ def load_parents(_file_name: str) -> None:
                 sire_animal_id = str_util.to_pos_long_or_none(row[27])  # AB
                 sire_animal = Animal.objects(id=sire_animal_id).first()
                 if sire_animal:
-                    animal.sire_animal = sire_animal
+                    ref_animal = ReferenceAnimal(id=sire_animal.id, ear_tag=sire_animal.ear_tag, birth_date=sire_animal.birth_date, status=sire_animal.status)
+                    animal.sire_animal = ref_animal
+                    animal.save()
 
                 # dam
                 dam_animal_id = str_util.to_pos_long_or_none(row[28])  # AC
                 dam_animal = Animal.objects(id=dam_animal_id).first()
                 if dam_animal:
-                    animal.dam_animal = dam_animal
+                    ref_animal = ReferenceAnimal(id=dam_animal.id, ear_tag=dam_animal.ear_tag, birth_date=dam_animal.birth_date, status=dam_animal.status)
+                    animal.dam_animal = ref_animal
+                    animal.save()
 
                 # genetic dam
                 genetic_dam_animal_id = str_util.to_pos_long_or_none(row[29])  # AD
                 genetic_dam_animal = Animal.objects(id=genetic_dam_animal_id).first()
                 if genetic_dam_animal:
-                    animal.genetic_dam_animal = genetic_dam_animal
+                    ref_animal = ReferenceAnimal(id=genetic_dam_animal.id, ear_tag=genetic_dam_animal.ear_tag, birth_date=genetic_dam_animal.birth_date, status=genetic_dam_animal.status)
+                    animal.genetic_dam = ref_animal
+                    animal.save()
 
                 # real dam
                 real_dam_animal_id = str_util.to_pos_long_or_none(row[30])  # AE
                 real_dam_animal = Animal.objects(id=real_dam_animal_id).first()
                 if real_dam_animal:
-                    animal.real_dam_animal = real_dam_animal
-
-                animal.save()
+                    ref_animal = ReferenceAnimal(id=real_dam_animal.id, ear_tag=real_dam_animal.ear_tag, birth_date=real_dam_animal.birth_date, status=real_dam_animal.status)
+                    animal.genetic_dam = ref_animal
+                    animal.save()
 
     except Exception as e:
-        logging.error("{} {}".format(inspect.stack()[0][3], e))
+        logging.error(f"{inspect.stack()[0][3]} {e}")
 
     finally:
-        logging.info("Done")
+        logging.info(f"{inspect.stack()[0][3]} Done")
 
 
 def load_children() -> None:
@@ -225,19 +231,19 @@ def load_children() -> None:
 
     for animal in animals:
         if "BULL" == animal.animal_type:
-            offspring = Animal.objects(sire_animal=animal.id).order_by("-birth_date")
+            offspring = Animal.objects(sire_animal__id=animal.id).order_by("-birth_date")
         elif "COW" == animal.animal_type:
-            offspring = Animal.objects(dam_animal=animal.id).order_by("-birth_date")
+            offspring = Animal.objects(dam_animal__id=animal.id).order_by("-birth_date")
         else:
             continue
         if offspring:
-            # for c in offspring:
-            #     print(c.id)
-            # new_offspring = sorted(offspring, key=lambda x: x.id, reverse=True)
-            # for d in new_offspring:
-            #     print(d.id)
-            # animal.offspring = new_offspring
-            animal.offspring = offspring
+            ref_offsprings = list()
+            for ref_animal in offspring:
+                animal.offspring.append(ReferenceAnimal(
+                    id=ref_animal.id,
+                    ear_tag=ref_animal.ear_tag,
+                    birth_date=ref_animal.birth_date,
+                    status=ref_animal.status))
             animal.save()
 
 
