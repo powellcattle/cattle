@@ -20,7 +20,7 @@
         }
 
         tr:nth-child(odd) {
-            background-color: #f2f2f2;
+            background-color: #0178b1;
         }
     </style>
 
@@ -30,10 +30,10 @@
             $("#eartag").autocomplete({
                 source: function (request, response) {
                     $.ajax({
-                        url: 'http://powell-home.com:5000/animal',
+                        url: '/animal',
                         type: 'GET',
                         autoFocus: true,
-                        dataType: 'jsonp',
+                        dataType: 'json',
                         data: {ear_tag: request.term},
                         success: function (data) {
                             if (!data)
