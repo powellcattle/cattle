@@ -1,5 +1,3 @@
-from typing import List, Any
-
 import mongoengine
 from bson import json_util
 
@@ -10,8 +8,6 @@ import logging
 
 from flask import Flask
 from flask import request
-from flask_jsonpify import jsonpify as jsonify
-
 
 logging.basicConfig(format="%(asctime)s %(levelname)s:%(message)s",
                     filename="flask_autocomplete.log",

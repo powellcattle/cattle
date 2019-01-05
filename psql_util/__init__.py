@@ -1,7 +1,7 @@
 __author__ = 'spowell'
+import inspect
 import logging
 import socket
-import inspect
 
 import psycopg2
 

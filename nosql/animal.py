@@ -14,6 +14,7 @@ CONCEPTION_METHODS = ("NS", "ET", "AI")
 EAR_TAG_COLORS = ("BLUE", "GREEN", "RED", "WHITE", "YELLOW", "PURPLE")
 EAR_TAG_YEARS = (("A", 2013), ("B", 2014), ("C", 2015), ("D", 2016), ("E", 2017), ("F", 2018), ("G", 2019))
 
+
 class Animal(mongoengine.Document):
     id = mongoengine.IntField(required=True, primary_key=True)
     ear_tag = mongoengine.StringField(required=False, null=False)
@@ -55,5 +56,3 @@ class Animal(mongoengine.Document):
             }
         ]
     }
-
-

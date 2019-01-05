@@ -1,12 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import locale
 import logging
 
-from mongoengine import connect
-from nosql import mongo_setup
-
 import cattle
+from nosql import mongo_setup
 
 logging.basicConfig(filename="load_animals.log",
                     format="%(asctime)s %(levelname)s:%(message)s",

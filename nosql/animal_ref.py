@@ -2,6 +2,7 @@ import mongoengine
 
 ANIMAL_STATUS = ("SOLD", "DEAD", "ACTIVE", "REFERENCE")
 
+
 class ReferenceAnimal(mongoengine.EmbeddedDocument):
     id = mongoengine.IntField(required=True)
     ear_tag = mongoengine.StringField(required=False)

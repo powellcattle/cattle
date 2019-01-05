@@ -14,7 +14,7 @@ def find_by_ear_tag(ear_tag: str) -> Animal:
     return Animal.objects(ear_tag=ear_tag.upper()).first()
 
 
-def like_ear_tag(search_pattern: str, animal_type=None, return_limit=10 ) -> List[Animal]:
+def like_ear_tag(search_pattern: str, animal_type=None, return_limit=10) -> List[Animal]:
     """
 
     Find all animals with an ear tag that contains any or all of the supplied ear tag pattern

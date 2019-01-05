@@ -1,5 +1,3 @@
-from bson import json_util
-
 from animal import Animal
 
 __author__ = 'spowell'
@@ -29,20 +27,31 @@ def startup():
 def eartag_details():
     try:
         ear_tag = request.args.get("eartag")
-        print(ear_tag)
-        animal = Animal.objects(status="ACTIVE", ear_tag=ear_tag).first()
-        if animal:
-            calves = list()
-            for offspring in animal.offspring:
-                calf = dict()
-                calf["ear_tag"] = str(offspring["ear_tag"])
-                calf["status"] = str(offspring["status"])
-                if offspring["birth_date"]:
-                    calf["birth_date"] = offspring["birth_date"].strftime("%x")
-                    print(calf["birth_date"])
+        found_animal = Animal.objects(status="ACTIVE", ear_tag=ear_tag).first()
+        if found_animal:
+            animal_list = list()
 
-                calves.append(calf)
-            return jsonify(animal_details=calves)
+            if found_animal.sire_animal:
+                animal_dict = dict()
+                animal_dict["ear_tag"] = found_animal.sire_animal.ear_tag
+                animal_dict["off_type"] = "SIRE"
+                animal_list.append(animal_dict)
+            if found_animal.dam_animal:
+                animal_dict = dict()
+                animal_dict["ear_tag"] = found_animal.dam_animal.ear_tag
+                animal_dict["off_type"] = "DAM"
+                animal_list.append(animal_dict)
+
+            for offspring in found_animal.offspring:
+                animal_dict = dict()
+                animal_dict["ear_tag"] = str(offspring["ear_tag"])
+                animal_dict["status"] = str(offspring["status"])
+                animal_dict["off_type"] = "CALF"
+                if offspring["birth_date"]:
+                    animal_dict["birth_date"] = offspring["birth_date"].strftime("%x")
+
+                animal_list.append(animal_dict)
+            return jsonify(animal_details=animal_list)
         else:
             return jsonify(animal_details="none")
     except Exception as e:

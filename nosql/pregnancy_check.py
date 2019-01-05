@@ -13,4 +13,3 @@ class PregnancyCheck(mongoengine.EmbeddedDocument):
     time_pregnant = mongoengine.IntField()
     expected_due_date = mongoengine.DateField()
     comments = mongoengine.StringField()
-
