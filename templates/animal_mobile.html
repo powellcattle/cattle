@@ -2,100 +2,123 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <title>Cattle Offspring</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet"/>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            text-align: left;
-            padding: 8px;
-        }
-        tr:nth-child(odd) {
-            background-color: #f2f2f2;
+        .ui-filter-inset {
+            margin-top: 0;
         }
     </style>
 
     <script type="text/javascript">
 
-        $(function () {
-            $("#eartag").autocomplete({
-                source: function (request, response) {
+        $(document).on("pagecreate", function () {
+            $("#input_eartag").on('change', function() {
+               if( $(this).val() == '' ){
+                    $("#calf-table thead").remove();
+                    $("#calf-table tbody").remove();
+               }
+            });
+
+
+
+            $("#list_animals").on("tap", "li", function (event) {
+                var $ul = $(this);
+                $("#input_eartag").val($ul.text());
+                $("#list_animals").html("");
+
+                $.getJSON('/cattle/_eartag_datails', {
+                    "get_eartag": $ul.text(),
+                }, function (data) {
+                    $("#calf-table thead").remove();
+                    var calfs =
+                        "<thead><tr><th data-priority='1'>Tag</th><th data-priority='2'>Age</th><th data-priority='3'>Sex</th><th data-priority='4'>Status</th></tr></thead><tbody></tbody>";
+
+
+
+                    $.each(data.animal_details, function (idx, animal) {
+                        console.log(animal.age);
+                        calfs += '<tr><td>' + animal.ear_tag + '</td>';
+                        calfs += "<td>" + animal.age + "</td>";
+                        calfs += "<td>" + animal.sex + "</td>";
+                        calfs += "<td>" + animal.status + "</td></tr>";
+                    });
+                    $("#calf-table").append(calfs);
+                });
+
+
+            });
+
+
+            $("#list_animals").on("filterablebeforefilter", function (e, data) {
+                var $ul = $(this),
+                    $input = $(data.input),
+                    value = $input.val(),
+                    html = "";
+                $ul.html("");
+                if (value && value.length > 0) {
+                    $ul.html("<li><div class='ui-loader'><span class='ui-icon ui-icon-loading'></span></div></li>");
+                    $ul.listview("refresh");
                     $.ajax({
-                        url: 'http://powell-home.com:5000/animal',
+                        url: '/cattle/animal',
                         type: 'GET',
                         autoFocus: true,
-                        dataType: 'jsonp',
-                        data: {ear_tag: request.term},
-                        success: function (data) {
-                            if (!data)
+                        dataType: 'json',
+                        data: {"get_eartag": $input.val()}
+                    }).then(function (response) {
+                            if (!response)
                                 return;
-                            response($.map(data, function (animals) {
-                                var ear_tags = [];
-                                $.each(animals, function (idx, animal) {
-                                    ear_tags[idx] = animal.ear_tag;
-                                });
-                                return ear_tags;
-                            }));
+                            $.each(response["animals"], function (idx, animal) {
+                                html += "<li>" + animal.ear_tag + "</li>";
+
+
+                            });
+                            $ul.html(html);
+                            $ul.listview("refresh");
+                            $ul.trigger("updatelayout");
                         }
-                    });
-                },
-                minLength: 3
+                    );
+                }
             });
-            $('a#process_eartag').bind('click', function () {
-                $.getJSON('/_eartag_datails', {
-                    eartag: $('input[name="eartag"]').val(),
-                }, function (data) {
-                    $.map(data, function (animals) {
-                        $("#calftbl tr").remove();
-                        $("#parenttbl tr").remove();
-                        var calfs = "<table id='calftbl' class='table'>";
-                        var parents = "<table id='parenttbl'>";
-                        $.each(animals, function (idx, animal) {
-                            if (animal.off_type != "CALF") {
-                                parents += '<tr><th style="text-align:left">' + animal.off_type + '</th>';
-                                parents += '<th style="text-align:left">' + animal.ear_tag + '</tr></th>';
-                            } else {
-                                if (null != animal.birth_date) {
-                                    calfs += '<tr><th style="text-align:left">' + animal.ear_tag + '</th>';
-                                    calfs += '<th style="text-align:left">' + animal.birth_date + '</th>';
-                                    calfs += '<th style="text-align:left">' + animal.status + '</tr></th>';
-                                } else {
-                                    calfs += '<tr><th style="text-align:left">' + animal.ear_tag + '</th>';
-                                    calfs += '<th style="text-align:left">' + animal.status + '</tr></th>';
-                                }
-                            }
-                        });
-                        calfs += '</table>';
-                        $("#calf_results").prepend(calfs);
-                        parents += '</table>';
-                        $("#parent_results").prepend(parents);
-                    });
-                });
-                return false;
-            });
+
 
         });
 
-
     </script>
 </head>
-<body class="body">
-<div>
-    <form>
-        <input id="eartag" type="text" autocomplete="off" name="eartag">
-        <a href="#" id='process_eartag'>
-            <button class="btn btn-default">Details</button>
-        </a>
-    </form>
-    <p id="parent_results"></p>
-    <p id="calf_results"></p>
+<body>
+<div class="ui-widget" data-role="page" data-theme="a" data-content-theme="a">
+    <div data-role="header">
+        <h1>Cattle Offspring</h1>
+    </div>
+    <div class="ui-content" role="main">
+        <form class="ui-filterable">
+            <input id="input_eartag" data-type="search" placeholder="Ear tag..."/>
+        </form>
+        <ul id="list_animals" data-filter="true" data-input="#input_eartag" data-inset="true" data-role="listview"
+        ></ul>
 
+        <div id="calves">
+            <table data-role="tableview" id="calf-table" data-mode="reflow" class="ui-responsive">
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th data-priority="1">Tag</th>-->
+                    <!--<th data-priority="2">Age</th>-->
+                    <!--<th data-priority="3">Sex</th>-->
+                    <!--<th data-priority="4">Status</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+
+                <!--</tbody>-->
+            </table>
+        </div>
+
+    </div>
 </div>
-
 </body>
 </html>

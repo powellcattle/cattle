@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="/resources/demos/style.css">
+    <!--<link rel="stylesheet" href="/resources/demos/style.css">-->
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
@@ -27,6 +27,7 @@
     <script type="text/javascript">
 
         $(function () {
+
             $("#eartag").autocomplete({
                 source: function (request, response) {
                     $.ajax({
@@ -51,12 +52,21 @@
                 minLength: 3
             });
             $('a#process_eartag').bind('click', function () {
+                if ($("#btn").text() == 'Clear') {
+                    $("#eartag").text('')
+                    $("#btn").text('Details');
+                    $("#calftbl tr").remove();
+                    $("#parenttbl tr").remove();
+                    return true;
+                }
+
                 $.getJSON('/_eartag_datails', {
                     eartag: $('input[name="eartag"]').val(),
                 }, function (data) {
                     $.map(data, function (animals) {
                         $("#calftbl tr").remove();
                         $("#parenttbl tr").remove();
+                        $("#btn").text('Clear');
                         var calfs = "<table id='calftbl' class='table'>";
                         var parents = "<table id='parenttbl'>";
                         $.each(animals, function (idx, animal) {
@@ -93,13 +103,12 @@
     <form>
         <input id="eartag" type="text" autocomplete="off" name="eartag">
         <a href="#" id='process_eartag'>
-            <button class="ui-button ui-widget ui-corner-all">Details</button>
+            <button id="btn" class="ui-button ui-widget ui-corner-all">Details</button>
         </a>
     </form>
     <p id="parent_results"></p>
     <p id="calf_results"></p>
 
 </div>
-
 </body>
 </html>

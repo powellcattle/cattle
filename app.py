@@ -2,6 +2,7 @@ from animal import Animal
 
 __author__ = 'spowell'
 import logging
+import datetime
 
 from flask import Flask
 from flask import request
@@ -16,31 +17,33 @@ logging.basicConfig(format="%(asctime)s %(levelname)s:%(message)s",
                     datefmt="%m/%d/%Y %I:%M:%S %p")
 
 app = Flask(__name__)
-flask_setup = {"host": "192.168.1.170", "port": "5000", "debug": True}
+flask_setup = {"host": "192.168.1.170", "port": "5000", "debug": False}
 
 
 @app.before_first_request
 def startup():
     mongo_setup.global_init()
 
-@app.route("/_eartag_datails")
+
+@app.route("/cattle/_eartag_datails")
 def eartag_details():
     try:
-        ear_tag = request.args.get("eartag")
+        ear_tag = request.args.get("get_eartag")
         found_animal = Animal.objects(status="ACTIVE", ear_tag=ear_tag).first()
         if found_animal:
             animal_list = list()
 
-            if found_animal.sire_animal:
-                animal_dict = dict()
-                animal_dict["ear_tag"] = found_animal.sire_animal.ear_tag
-                animal_dict["off_type"] = "SIRE"
-                animal_list.append(animal_dict)
-            if found_animal.dam_animal:
-                animal_dict = dict()
-                animal_dict["ear_tag"] = found_animal.dam_animal.ear_tag
-                animal_dict["off_type"] = "DAM"
-                animal_list.append(animal_dict)
+            # if found_animal.sire_animal:
+            #     animal_dict = dict()
+            #     animal_dict["ear_tag"] = found_animal.sire_animal.ear_tag
+            #     animal_dict["off_type"] = "SIRE"
+            #     animal_list.append(animal_dict)
+            #
+            # if found_animal.dam_animal:
+            #     animal_dict = dict()
+            #     animal_dict["ear_tag"] = found_animal.dam_animal.ear_tag
+            #     animal_dict["off_type"] = "DAM"
+            #     animal_list.append(animal_dict)
 
             for offspring in found_animal.offspring:
                 animal_dict = dict()
@@ -48,39 +51,57 @@ def eartag_details():
                 animal_dict["status"] = str(offspring["status"])
                 animal_dict["off_type"] = "CALF"
                 if offspring["birth_date"]:
-                    animal_dict["birth_date"] = offspring["birth_date"].strftime("%x")
+                    animal_dict["age"] = age(offspring["birth_date"])
+                if offspring["sex"]:
+                    if "STEER" == offspring["sex"]:
+                        animal_dict["sex"] = "BULL"
+                    else:
+                        animal_dict["sex"] = offspring["sex"]
+                else:
+                    animal_dict["sex"] = "UNKNOWN"
 
                 animal_list.append(animal_dict)
+
             return jsonify(animal_details=animal_list)
         else:
             return jsonify(animal_details="none")
     except Exception as e:
-        return(str(e))
+        return (str(e))
 
 
-@app.route("/animal", methods=["GET"])
+def age(_date: datetime.date) -> int:
+    today = datetime.date.today()
+    delta = abs(today - _date)
+
+    if int(delta.days / 365 * 12) < 12:
+        return round(delta.days / 365 * 12)
+    else:
+        return round(delta.days / 365)
+
+
+@app.route("/cattle/animal", methods=["GET"])
 def get_animal():
-
-    ear_tag = request.args.get("ear_tag")
+    ear_tag = request.args.get("get_eartag")
+    print(ear_tag)
     if ear_tag:
-        animals = Animal.objects(status="ACTIVE", ear_tag__icontains=ear_tag)[:5]
+        animals = Animal.objects(status="ACTIVE", ear_tag__icontains=ear_tag)[:10]
     else:
         animals = Animal.objects(status="ACTIVE")[:5]
     results = list()
     if animals:
-
         for animal in animals:
             results.append(animal.to_mongo())
         return jsonify({"animals": results})
     else:
         return jsonify(results)
 
-@app.route("/home/")
+
+@app.route("/cattle/")
 def animal():
     try:
-        return render_template("animal.html")
+        return render_template("animal_mobile.html")
     except Exception as e:
-        return(str(e))
+        return (str(e))
 
 
 if '__main__' == __name__:

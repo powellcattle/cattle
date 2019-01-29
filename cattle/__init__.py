@@ -237,12 +237,12 @@ def load_children() -> None:
         else:
             continue
         if offspring:
-            ref_offsprings = list()
             for ref_animal in offspring:
                 animal.offspring.append(ReferenceAnimal(
                     id=ref_animal.id,
                     ear_tag=ref_animal.ear_tag,
                     birth_date=ref_animal.birth_date,
+                    sex=ref_animal.sex,
                     status=ref_animal.status))
             animal.save()
 
