@@ -32,19 +32,6 @@ def eartag_details():
         found_animal = Animal.objects(status="ACTIVE", ear_tag=ear_tag).first()
         if found_animal:
             animal_list = list()
-
-            # if found_animal.sire_animal:
-            #     animal_dict = dict()
-            #     animal_dict["ear_tag"] = found_animal.sire_animal.ear_tag
-            #     animal_dict["off_type"] = "SIRE"
-            #     animal_list.append(animal_dict)
-            #
-            # if found_animal.dam_animal:
-            #     animal_dict = dict()
-            #     animal_dict["ear_tag"] = found_animal.dam_animal.ear_tag
-            #     animal_dict["off_type"] = "DAM"
-            #     animal_list.append(animal_dict)
-
             for offspring in found_animal.offspring:
                 animal_dict = dict()
                 animal_dict["ear_tag"] = str(offspring["ear_tag"])
@@ -66,7 +53,7 @@ def eartag_details():
         else:
             return jsonify(animal_details="none")
     except Exception as e:
-        return (str(e))
+        return str(e)
 
 
 def age(_date: datetime.date) -> int:
@@ -82,7 +69,6 @@ def age(_date: datetime.date) -> int:
 @app.route("/cattle/animal", methods=["GET"])
 def get_animal():
     ear_tag = request.args.get("get_eartag")
-    print(ear_tag)
     if ear_tag:
         animals = Animal.objects(status="ACTIVE", ear_tag__icontains=ear_tag)[:10]
     else:
@@ -97,9 +83,9 @@ def get_animal():
 
 
 @app.route("/cattle/")
-def animal():
+def render_animal():
     try:
-        return render_template("animal_mobile.html")
+        return render_template("test.html")
     except Exception as e:
         return (str(e))
 

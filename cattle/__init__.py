@@ -10,6 +10,7 @@ from nosql.breed import Breed, BreedTemp
 from nosql.measurement import Measurement
 from nosql.pasture import Pasture
 from nosql.pregnancy_check import PregnancyCheck
+from treatment import Treatment
 
 __author__ = 'spowell'
 
@@ -89,19 +90,10 @@ def load_animals(_file_name: str) -> None:
                 # ocv_number = str_util.to_upper_or_none(row[24])  # Y
                 animal.status = str_util.to_upper_or_none(row[25])  # Z
                 pasture_id = str_util.to_pos_long_or_none(row[26])  # AA
-
                 pasture = Pasture.objects(id=pasture_id).first()
                 if pasture:
-                    animal.pasture = pasture
+                    animal.pasture = pasture.name
 
-                # sire_animal_id = str_util.to_pos_long_or_none(row[27])  # AB
-                # dam_animal_id = str_util.to_pos_long_or_none(row[28])  # AC
-                # genetic_dam_animal_id = str_util.to_pos_long_or_none(row[29])  # AD
-                # real_dam_animal_id = str_util.to_pos_long_or_none(row[30])  # AE
-                # sire_legacy_id = str_util.to_pos_long_or_none(row[31])  # AF
-                # dam_legacy_id = str_util.to_pos_long_or_none(row[32])  # AG
-                # genetic_dam_legacy_id = str_util.to_pos_long_or_none(row[33])  # AH
-                # breeder_contact_id = str_util.to_pos_long_or_none(row[34])  # AI
                 animal.birth_date = str_util.to_date_or_none(row[35])  # AJ
                 # birth_year = None
                 # if birth_date:
@@ -109,59 +101,9 @@ def load_animals(_file_name: str) -> None:
 
                 animal.weaning_date = str_util.to_date_or_none(row[36])  # AK
                 animal.yearling_date = str_util.to_date_or_none(row[37])  # AL
-                # percent_dam_weight = str_util.to_float_or_none(row[38])  # AM
                 animal.conception_method = str_util.to_upper_or_none(row[39])  # AN
-                # grafted_calf = str_util.to_boolean_or_none(row[40])  # AO
                 animal.purchase_date = str_util.to_date_or_none(row[41])  # AP
                 animal.purchased = str_util.to_boolean_or_none(row[42])  # AQ
-                # purchased_from_contact_id = str_util.to_pos_long_or_none(row[43])  # AR
-                # purchase_price = str_util.to_float_or_none(row[44])  # AS
-                # sale_ticket_id = str_util.to_pos_long_or_none(row[45])  # AT
-                # sale_price = str_util.to_float_or_none(row[46])  # AU
-                # sale_weight = str_util.to_float_or_none(row[47])  # AV
-                # marketing_cost = str_util.to_float_or_none(row[48])  # AX
-                # reason_for_sale = str_util.to_upper_or_none(row[49])  # AY
-                # death_date = str_util.to_date_or_none(row[50])  # AZ
-                # cause_of_death = str_util.to_upper_or_none(row[51])  # AV
-                # asking_price = str_util.to_float_or_none(row[52])  # BA
-                # marketing_comments = str_util.to_upper_or_none(row[53])  # BB
-                # mppa = str_util.to_float_or_none(row[54])  # BC
-                # avg_calving_interval = str_util.to_pos_int_or_none(row[55])  # BD
-                # avg_post_partum_interval = str_util.to_pos_int_or_none(row[56])  # BE
-                # last_breeding_date = str_util.to_date_or_none(row[57])  # BF
-                # last_calving_date = str_util.to_date_or_none(row[58])  # BG
-                # current_breeding_status = str_util.to_upper_or_none(row[59])  # BH
-                # next_calving_date = str_util.to_date_or_none(row[60])  # BI
-                # pelvic_area = str_util.to_float_or_none(row[61])  # BJ
-                # pelvic_horizontal = str_util.to_float_or_none(row[62])  # BK
-                # pelvic_vertical = str_util.to_float_or_none(row[63])  # BL
-                # comments = str_util.to_upper_or_none(row[64])  # BM
-                # donor_cow = str_util.to_boolean_or_none(row[65])  # BN
-                # ai_bull = str_util.to_boolean_or_none(row[66])  # BO
-                # promote_date = str_util.to_date_or_none(row[67])  # BP
-                # demote_date = str_util.to_date_or_none(row[68])  # BQ
-                # birth_weight = str_util.to_pos_int_or_none(row[69])  # BR
-                # weaning_weight = str_util.to_pos_int_or_none(row[70])  # BS
-                # yearling_weight = str_util.to_pos_int_or_none(row[71])  # BT
-                # adj_birth_weight = str_util.to_pos_int_or_none(row[72])  # BU
-                # adj_weaning_weight = str_util.to_pos_int_or_none(row[73])  # BV
-                # adj_yearling_weight = str_util.to_pos_int_or_none(row[74])  # BW
-                # last_tip_to_tip = str_util.to_pos_int_or_none(row[75])  # BX
-                # last_total_horn = str_util.to_pos_int_or_none(row[76])  # BY
-                # last_base = str_util.to_pos_int_or_none(row[77])  # BZ
-                # last_composite = str_util.to_pos_int_or_none(row[78])  # CA
-                # last_horn_measure_date = str_util.to_date_or_none(row[79])  # CB
-                # last_weight = str_util.to_pos_int_or_none(row[80])  # CC
-                # last_height = str_util.to_pos_int_or_none(row[81])  # CD
-                # last_bcs = str_util.to_pos_int_or_none(row[82])  # CE
-                # last_weight_date = str_util.to_date_or_none(row[83])  # CF
-                # embryo_recovery_date = str_util.to_date_or_none(row[86])  # CI
-                # nait_number = str_util.to_pos_int_or_none(row[87])  # CJ
-                # nlis_number = str_util.to_pos_int_or_none(row[88])  # CK
-                # last_treatment_date = str_util.to_date_or_none(row[89])  # CL
-                # withdrawal_date = str_util.to_date_or_none(row[90])  # CM
-                # castration_date = str_util.to_date_or_none(row[91])  # CN
-                # next_booster_date = str_util.to_date_or_none(row[92])  # CO
 
                 animal.save()
 
@@ -1277,7 +1219,7 @@ def load_breedings(_file_name):
     con = None
     csvfile = None
 
-    dict = dict()
+    # dict = dict()
 
     try:
         con = psql_util.psql_connection(_host="192.168.1.130", _database='rafter', _user='postgres', _password='postgres')
@@ -2328,6 +2270,96 @@ def sort_tags(_file_name):
             csvfile.close()
 
 
+def find_last_worked_cows(_pasture: str, _work_date: str) -> list:
+    try:
+        animals = Animal.objects(pasture=_pasture, animal_type="COW", sex="HEIFER", status="ACTIVE", treatments__gte={"treatment_date": _work_date})
+        return animals
+
+    except Exception as e:
+        logging.error("{} {}".format(inspect.stack()[0][3], e))
+
+    finally:
+        logging.info(f"{inspect.stack()[0][3]} {'Done.'}")
+
+
+def match_cm_to_list(_file_name: str) -> list:
+    try:
+        animals = Animal.objects(animal_type="COW", pasture="LOUISE", sex="HEIFER", status="ACTIVE")
+
+        ear_tags_list = list()
+        with open(_file_name, "r") as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            for row in reader:
+                ear_tags_list.append(str_util.to_upper_or_none(row[0]))
+
+        ear_tags_not_found = list()
+        for animal in animals:
+            if animal.ear_tag not in ear_tags_list:
+                ear_tags_not_found.append(animal.ear_tag)
+
+        return ear_tags_not_found
+
+    except Exception as e:
+        logging.error("{} {}".format(inspect.stack()[0][3], e))
+
+    finally:
+        logging.info(f"{inspect.stack()[0][3]} {'Done.'}")
+
+
+
+def match_list_to_cm(_file_name: str) -> list:
+    try:
+        ear_tags = list()
+
+        with open(_file_name, "r") as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+
+            for row in reader:
+                ear_tag = str_util.to_upper_or_none(row[0])  # B
+                # obtain the referenced animal
+                animal = Animal.objects(ear_tag=ear_tag).first()
+                if not animal:
+                    ear_tags.append(ear_tag)
+
+        return ear_tags
+
+    except Exception as e:
+        logging.error("{} {}".format(inspect.stack()[0][3], e))
+
+    finally:
+        logging.info(f"{inspect.stack()[0][3]} {'Done.'}")
+
+
+def load_treatments(_file_name: str) -> None:
+    try:
+        with open(_file_name, "r") as csvfile:
+            reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            next(reader, None)
+
+            for row in reader:
+                animal_id = str_util.to_pos_int_or_none(row[1])  # B
+                # obtain the referenced animal
+                animal = Animal.objects(id=animal_id).first()
+                if not animal:
+                    continue
+
+                treatment = Treatment()
+                treatment.category = str_util.to_upper_or_none(row[5])  # F
+                treatment.treatment_date = str_util.to_date_or_none(row[2])  # D
+                if not treatment.treatment_date:
+                    continue
+                treatment.medication = str_util.to_upper_or_none(row[6])  # G
+                treatment.dosage = str_util.to_upper_or_none(row[10])  # K
+                animal.treatments.append(treatment)
+                animal.save()
+
+    except Exception as e:
+        logging.error("{} {}".format(inspect.stack()[0][3], e))
+
+    finally:
+        logging.info(f"{inspect.stack()[0][3]} {'Done.'}")
+
+
 def load_measurements(_file_name: str) -> None:
     try:
         with open(_file_name, "r") as csvfile:
@@ -2339,7 +2371,7 @@ def load_measurements(_file_name: str) -> None:
                 # obtain the referenced animal
                 animal = Animal.objects(id=animal_id).first()
                 if not animal:
-                    continue;
+                    continue
 
                 measure = Measurement()
                 category = str_util.to_upper_or_none(row[2])  # C

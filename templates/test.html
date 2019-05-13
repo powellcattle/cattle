@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Address Guide</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" rel="stylesheet"/>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <style id="compiled-css" type="text/css">
+        .name {
+            width: 200px !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div data-role="page" class="ui-widget" data-theme="a" data-content-theme="a">
+
+    <div data-role="header">
+        <h1>Address Guide</h1>
+    </div>
+
+    <div role="main" class="ui-content" data-mini="true">
+
+        <div data-role="controlgroup" >
+
+            <label for="prefix">Select B</label>
+            <select name="prefix" id="prefix">
+                <option value="#">One</option>
+                <option value="#">Two</option>
+                <option value="#">Three</option>
+            </select>
+
+            <input type="text"
+                   name="st_name"
+                   id="st_name"
+                   autocapitalize="on"
+                   data-wrapper-class="st_name"
+                   placeholder="STREET NAME"/>
+
+            <label for="st_type">Select B</label>
+            <select name="st_type" id="st_type">
+                <option value="#">One</option>
+                <option value="#">Two</option>
+                <option value="#">Three</option>
+            </select>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

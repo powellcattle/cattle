@@ -2,8 +2,6 @@ import mongoengine
 
 from animal_ref import ReferenceAnimal
 from nosql.breed import Breed
-from nosql.measurement import Measurement
-from nosql.pasture import Pasture
 from nosql.pregnancy_check import PregnancyCheck
 
 ANIMAL_TYPES = ("COW", "CALF", "BULL")
@@ -41,9 +39,10 @@ class Animal(mongoengine.Document):
     genetic_dam_animal = mongoengine.EmbeddedDocumentField(ReferenceAnimal)
     real_dam_animal = mongoengine.EmbeddedDocumentField(ReferenceAnimal)
     offspring = mongoengine.EmbeddedDocumentListField(ReferenceAnimal)
-    pasture = mongoengine.ReferenceField(Pasture)
+    pasture = mongoengine.StringField(required=False)
     preg_checks = mongoengine.EmbeddedDocumentListField(PregnancyCheck)
-    measurements = mongoengine.EmbeddedDocumentListField(Measurement)
+    measurements = mongoengine.EmbeddedDocumentListField("Measurement")
+    treatments = mongoengine.EmbeddedDocumentListField("Treatment")
 
     meta = {
         "db_alias": "core",
